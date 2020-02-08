@@ -3,21 +3,23 @@ package com.dec04.geoshareapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-
-import java.util.Arrays;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class GoogleMapActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
@@ -32,7 +34,10 @@ public class GoogleMapActivity extends AppCompatActivity implements
     private final String[] permissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,8 @@ public class GoogleMapActivity extends AppCompatActivity implements
 
         this.applicationContext = GoogleMapActivity.this;
         permissionUtils = new PermissionUtils(applicationContext);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
@@ -58,11 +65,21 @@ public class GoogleMapActivity extends AppCompatActivity implements
 
         if (permissionUtils.check(permissions)) {
             googleMap.setMyLocationEnabled(true);
-            /*
-             * TODO: Сделать так, что бы после получения разрешений
-             *  и включения слоя локации пользователя,
-             *  камера сразу двигалась к последней локации пользователя
-             *  */
+
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d("DEV", location.getLatitude() + " : " + location.getLatitude() + ", ac: " + location.getAccuracy());
+                                // Logic to handle location object
+                                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, location.getAccuracy());
+                                googleMap.animateCamera(update);
+                            }
+                        }
+                    });
         } else {
             permissionUtils.requestPermission(permissions);
         }
@@ -104,11 +121,21 @@ public class GoogleMapActivity extends AppCompatActivity implements
             } else {
                 // Enable the my location layer if the permission has been granted.
                 googleMap.setMyLocationEnabled(true);
-                /*
-                 * TODO: Сделать так, что бы после получения разрешений
-                 *  и включения слоя локации пользователя,
-                 *  камера сразу двигалась к последней локации пользователя
-                 *  */
+
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    Log.d("DEV", location.getLatitude() + " : " + location.getLatitude() + ", ac: " + location.getAccuracy());
+                                    // Logic to handle location object
+                                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, location.getAccuracy());
+                                    googleMap.animateCamera(update);
+                                }
+                            }
+                        });
             }
         }
     }
