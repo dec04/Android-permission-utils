@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Geo Share App</string>
-    <string name="request_permission_explanation">Доступ к геолокации необходим, что бы отслеживать ваше местоположение по запросу.</string>
+    <string name="ACCESS_FINE_LOCATION_EXPLANATION">Доступ к геолокации необходим, что бы отслеживать ваше местоположение через GPS, по запросу.</string>
+    <string name="ACCESS_COARSE_LOCATION_EXPLANATION">Доступ к геолокации необходим, что бы отслеживать ваше местоположение через WiFi, по запросу.</string>
+    <string name="WRITE_EXTERNAL_STORAGE_EXPLANATION">Доступ к хранилищу необходим для работы Google Maps.</string>
     <string name="missing_permission_explanation">Отсутствуют необходимые разрешения, попробуйте запросить заного.</string>
+    <string name="next">Далее</string>
     <string name="got_it">Понятно</string>
     <string name="get">Запросить</string>
     <string name="get_again">Запросить еще раз</string>

@@ -17,16 +17,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import java.util.Arrays;
+
 public class GoogleMapActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int PERMISSION_REQUEST_CODE = 1;
     GoogleMap googleMap;
     PermissionUtils permissionUtils;
     Context applicationContext;
+    private final String[] permissions = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +43,7 @@ public class GoogleMapActivity extends AppCompatActivity implements
         mapFragment.getMapAsync(this);
 
         this.applicationContext = GoogleMapActivity.this;
-        permissionUtils = new PermissionUtils(applicationContext, applicationContext.getResources().getString(R.string.request_permission_explanation));
+        permissionUtils = new PermissionUtils(applicationContext);
     }
 
     @Override
@@ -50,7 +56,7 @@ public class GoogleMapActivity extends AppCompatActivity implements
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        if (permissionUtils.check()) {
+        if (permissionUtils.check(permissions)) {
             googleMap.setMyLocationEnabled(true);
             /*
              * TODO: Сделать так, что бы после получения разрешений
@@ -58,7 +64,7 @@ public class GoogleMapActivity extends AppCompatActivity implements
              *  камера сразу двигалась к последней локации пользователя
              *  */
         } else {
-            permissionUtils.requestPermission();
+            permissionUtils.requestPermission(permissions);
         }
     }
 
@@ -75,35 +81,35 @@ public class GoogleMapActivity extends AppCompatActivity implements
         Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        if (permissionUtils.flagPermissionDenied) {
-            // Permission was not granted, display error dialog.
-            permissionUtils.showMissingPermissionError();
-            permissionUtils.flagPermissionDenied = false;
-        }
-    }
+//    @Override
+//    protected void onResumeFragments() {
+//        super.onResumeFragments();
+//        if (permissionUtils.flagPermissionDenied) {
+//            // Permission was not granted, display error dialog.
+//            permissionUtils.showMissingPermissionError(permissions);
+//            permissionUtils.flagPermissionDenied = false;
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+        if (requestCode != PERMISSION_REQUEST_CODE) {
             return;
         }
 
-        if (ContextCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Display the missing permission error dialog when the fragments resume.
-            permissionUtils.flagPermissionDenied = true;
-        } else {
-            // Enable the my location layer if the permission has been granted.
-            googleMap.setMyLocationEnabled(true);
-            /*
-            * TODO: Сделать так, что бы после получения разрешений
-            *  и включения слоя локации пользователя,
-            *  камера сразу двигалась к последней локации пользователя
-            *  */
+        if (permissions.length != 0) {
+            if (!permissionUtils.check(permissions)) {
+                // Display the missing permission error dialog when the fragments resume.
+                permissionUtils.flagPermissionDenied = true;
+            } else {
+                // Enable the my location layer if the permission has been granted.
+                googleMap.setMyLocationEnabled(true);
+                /*
+                 * TODO: Сделать так, что бы после получения разрешений
+                 *  и включения слоя локации пользователя,
+                 *  камера сразу двигалась к последней локации пользователя
+                 *  */
+            }
         }
     }
 }
