@@ -2,20 +2,25 @@
 
 ## Simple class for give multiple permissions on android device, with simple explorations. 
 
+<a href="https://ko-fi.com/dmediadecoy"><img src="example/7150dbb8-4c4f-4cde-bec1-e0f690512e64.png" width="300"></a>
+<hr>
+
+Basic usage:
+
 In order for each permission to show its explanation, you need to add lines in the **_strings.xml_** file
 Required format for string resource names is **PERMISSION_NAME** + **_EXPLANATION**
 
 For example if you request this permissions (_ACCESS_FINE_LOCATION_, _ACCESS_COARSE_LOCATION_, _WRITE_EXTERNAL_STORAGE_) names must be:
 
-```
+```xml
 <string name="ACCESS_FINE_LOCATION_EXPLANATION">Some explanation</string>
 <string name="ACCESS_COARSE_LOCATION_EXPLANATION">Some explanation</string>
 <string name="WRITE_EXTERNAL_STORAGE_EXPLANATION">Some explanation</string>
 ```
 
-Basic usage from my google map example:
+Code from my google map example:
 
-```
+```java
 Context applicationContext;
 PermissionUtils permissionUtils;
 String[] permissions = {
@@ -27,15 +32,15 @@ String[] permissions = {
 
 Usually in a method OnCreate:
 
-```
+```java
 applicationContext = GoogleMapActivity.this;
 permissionUtils = new PermissionUtils(applicationContext);
 ```
 
 Check permissions:
 
-```
-... some code ...
+```java
+// ... some code ...
 
 // Check all permissions
 if (permissionUtils.check(permissions)) {
@@ -53,7 +58,7 @@ If permission not taken, app request it from user. All at once.
 
 Usualy in OnResume or OnResumeFragment method:
 
-```
+```java
 if (permissionUtils.flagPermissionDenied) {
     // Permission was not granted, display "permission rejected" dialog.
     permissionUtils.showMissingPermissionError(permissions);
@@ -71,7 +76,7 @@ The next time you request permissions, a window will be displayed explaining why
 
 You also need implement method onRequestPermissionsResult
 
-```
+```java
 @Override
 public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode != PERMISSION_REQUEST_CODE) {
