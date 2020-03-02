@@ -9,6 +9,8 @@
 <a href="https://ko-fi.com/dmediadecoy"><img src="example/7150dbb8-4c4f-4cde-bec1-e0f690512e64.png" width="300"></a>
 <hr>
 
+Just add permissionUtils.java to your project.
+
 Basic usage:
 
 In order for each permission to show its explanation, you need to add lines in the **_strings.xml_** file
